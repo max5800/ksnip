@@ -36,10 +36,10 @@ bool MacConfig::freezeImageWhileSnippingEnabled() const
 
 bool MacConfig::isGlobalHotKeysEnabledReadOnly() const
 {
-	return true;
+	return false;
 }
 
 bool MacConfig::globalHotKeysEnabled() const
 {
-	return false;
+	return Config::globalHotKeysEnabled();
 }

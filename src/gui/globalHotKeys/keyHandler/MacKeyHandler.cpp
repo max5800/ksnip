@@ -19,6 +19,14 @@
 
 #include "MacKeyHandler.h"
 
+int MacKeyHandler::mNextId = 0;
+
+MacKeyHandler::MacKeyHandler() : mHotKeyRef(nullptr)
+{
+	mHotKeyId.signature = 'ksnp';
+	mHotKeyId.id = 0;
+}
+
 MacKeyHandler::~MacKeyHandler()
 {
 	unregisterKey();
@@ -26,14 +34,76 @@ MacKeyHandler::~MacKeyHandler()
 
 bool MacKeyHandler::registerKey(const QKeySequence &keySequence)
 {
-	return false;
+	// Unregister any existing hotkey
+	unregisterKey();
+
+	auto keyCodeCombo = mKeyCodeMapper.map(keySequence);
+	
+	if (keyCodeCombo.key == 0) {
+		return false;
+	}
+
+	// Generate unique ID for this hotkey
+	mHotKeyId.id = ++mNextId;
+
+	// Register the hotkey using Carbon API
+	OSStatus status = RegisterEventHotKey(
+		keyCodeCombo.key,
+		keyCodeCombo.modifier,
+		mHotKeyId,
+		GetApplicationEventTarget(),
+		0,
+		&mHotKeyRef
+	);
+
+	return status == noErr;
 }
 
 bool MacKeyHandler::isKeyPressed(void *message)
 {
-	return false;
+	if (!message) {
+		return false;
+	}
+
+	auto event = static_cast<EventRef>(message);
+	
+	if (GetEventClass(event) != kEventClassKeyboard) {
+		return false;
+	}
+
+	if (GetEventKind(event) != kEventHotKeyPressed) {
+		return false;
+	}
+
+	EventHotKeyID eventHotKeyId;
+	OSStatus status = GetEventParameter(
+		event,
+		kEventParamDirectObject,
+		typeEventHotKeyID,
+		nullptr,
+		sizeof(EventHotKeyID),
+		nullptr,
+		&eventHotKeyId
+	);
+
+	if (status != noErr) {
+		return false;
+	}
+
+	return eventHotKeyId.signature == mHotKeyId.signature && 
+	       eventHotKeyId.id == mHotKeyId.id;
 }
 
 void MacKeyHandler::unregisterKey() const
 {
+	if (mHotKeyRef != nullptr) {
+		UnregisterEventHotKey(mHotKeyRef);
+		mHotKeyRef = nullptr;
+	}
+}
+
+OSStatus MacKeyHandler::hotKeyHandler(EventHandlerCallRef nextHandler, EventRef event, void *userData)
+{
+	// This handler can be used for custom event handling if needed
+	return CallNextEventHandler(nextHandler, event);
 }

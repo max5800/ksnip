@@ -20,13 +20,15 @@
 #ifndef KSNIP_MACKEYHANDLER_H
 #define KSNIP_MACKEYHANDLER_H
 
+#include <Carbon/Carbon.h>
+
 #include "IKeyHandler.h"
 #include "src/gui/globalHotKeys/KeySequenceToMacKeyCodeTranslator.h"
 
 class MacKeyHandler : public IKeyHandler
 {
 public:
-	MacKeyHandler() = default;
+	MacKeyHandler();
 	~MacKeyHandler() override;
 
 	bool registerKey(const QKeySequence &keySequence) override;
@@ -34,8 +36,12 @@ public:
 
 private:
 	KeySequenceToMacKeyCodeTranslator mKeyCodeMapper;
+	mutable EventHotKeyRef mHotKeyRef;
+	EventHotKeyID mHotKeyId;
+	static int mNextId;
 
 	void unregisterKey() const;
+	static OSStatus hotKeyHandler(EventHandlerCallRef nextHandler, EventRef event, void* userData);
 };
 
 #endif //KSNIP_MACKEYHANDLER_H

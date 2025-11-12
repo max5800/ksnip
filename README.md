@@ -35,7 +35,7 @@ Latest ksnip version contains following features:
 * Obfuscate image regions with blur and pixelate.
 * Add effects to image (Drop Shadow, Grayscale, invert color or Border).
 * Add watermarks to captured images.
-* Global hotkeys for capturing screenshots (currently only for Windows and X11).
+* Global hotkeys for capturing screenshots (Windows, X11, and macOS).
 * Tabs for screenshots and images.
 * Open existing images via dialog, drag-and-drop or paste from clipboard.
 * Run as single instance application (secondary instances send cli parameter to primary instance).
@@ -274,6 +274,7 @@ If you are using Archlinux, you may prefer to [build ksnip through AUR](https://
 1. Snipping area with transparent background doesn't work, freeze background is always used. Issue [#151](https://github.com/ksnip/ksnip/issues/151)
 2. Second activation of snipping area doesn't get focus, you need to switch to the right side in order to see the snipping area. Issue [#152](https://github.com/ksnip/ksnip/issues/152)
 3. Mouse cursor is always captured. Issue [#153](https://github.com/ksnip/ksnip/issues/153)
+4. Global hotkeys require Accessibility permissions on macOS 10.14 (Mojave) and later. When you enable global hotkeys, macOS will prompt you to grant ksnip Accessibility permissions in System Preferences > Security & Privacy > Privacy > Accessibility.
 
 ### Wayland
 1. Portal and Native Screenshots not working under KDE Plasma `>= 5.80`. The issue is coming from a recent change in KDE 

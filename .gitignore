@@ -85,3 +85,4 @@ perf.data*
 
 # Source archive packed by `snapcraft cleanbuild` before pushing to the LXD container
 /*_source.tar.bz2
+_codeql_detected_source_root
